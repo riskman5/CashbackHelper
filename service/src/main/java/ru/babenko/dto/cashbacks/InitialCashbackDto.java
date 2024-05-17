@@ -1,14 +1,17 @@
 package ru.babenko.dto.cashbacks;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public record InitialCashbackDto(
         @NotNull
+        @NotBlank
         String cardName,
         @NotNull
+        @NotBlank
         String category,
         @NotNull
         @DecimalMin(value = "0")

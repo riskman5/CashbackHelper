@@ -25,7 +25,7 @@ public class BankServiceImpl implements BankService {
 
         Bank newBank = Bank.builder()
             .name(initialBankDto.name())
-            .cashbackLimit(initialBankDto.cashBackLimit())
+            .cashbackLimit(initialBankDto.cashbackLimit())
             .cards(List.of())
             .build();
         newBank = bankRepository.save(newBank);
