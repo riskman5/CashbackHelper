@@ -10,10 +10,11 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":controller"))
     implementation(project(":service"))
-    implementation(project(":dal"))
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.2.5")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
