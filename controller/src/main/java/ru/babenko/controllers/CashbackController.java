@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.babenko.dto.cashbacks.FullCashbackDto;
 import ru.babenko.dto.cashbacks.InitialCashbackDto;
@@ -25,6 +26,18 @@ public class CashbackController {
     @PostMapping("/future")
     public FullCashbackDto addFutureCashback(@Valid @RequestBody InitialCashbackDto initialCashbackDto) {
         return cashbackService.addFutureCashback(initialCashbackDto);
+    }
+
+    @DeleteMapping("/current")
+    public void deleteCurrentCashback(@RequestParam(name = "cardName") String cardName,
+                                      @RequestParam(name = "category") String category) {
+        cashbackService.deleteCurrentCashback(cardName, category);
+    }
+
+    @DeleteMapping("/future")
+    public void deleteFutureCashback(@RequestParam(name = "cardName") String cardName,
+                                     @RequestParam(name = "category") String category) {
+        cashbackService.deleteFutureCashback(cardName, category);
     }
 
     @DeleteMapping("/expire")

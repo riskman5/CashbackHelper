@@ -9,8 +9,12 @@ import java.util.List;
 
 public interface CardsService {
     FullCardDto addCard(InitialCardDto initialCardDto);
+
     List<FullCardDto> cardList();
+
     FullCardDto chooseCard(String category, BigDecimal value);
+
     FullCardDto addTransaction(String cardName, String category, BigDecimal transactionAmount);
+
     List<CardCashbackAmountDto> estimateCashback();
 }

@@ -14,7 +14,6 @@ public record InitialBankDto(
         String name,
         @DecimalMin(value = "0")
         BigDecimal cashbackLimit) {
-
     public InitialBankDto(String name) {
             this(name, null);
     }

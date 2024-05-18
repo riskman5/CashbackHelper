@@ -1,6 +1,7 @@
 package ru.babenko.controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,15 +36,19 @@ public class CardsController {
     }
 
     @GetMapping("/choose")
-    public FullCardDto ChooseCard(@RequestParam(name = "category") String category,
-                                  @RequestParam(name = "value", required = false) BigDecimal value) {
+    public FullCardDto chooseCard(@RequestParam(name = "category") String category,
+                                  @RequestParam(name = "value", required = false)
+                                  @DecimalMin(value = "0", inclusive = false)
+                                  BigDecimal value) {
         return cardsService.chooseCard(category, value);
     }
 
     @PutMapping("/{cardName}/transactions")
     public FullCardDto addTransaction(@PathVariable("cardName") String cardName,
                                       @RequestParam(name = "category") String category,
-                                      @RequestParam(name = "transactionAmount") BigDecimal transactionAmount) {
+                                      @RequestParam(name = "transactionAmount")
+                                      @DecimalMin(value = "0", inclusive = false)
+                                          BigDecimal transactionAmount) {
         return cardsService.addTransaction(cardName, category, transactionAmount);
     }
 

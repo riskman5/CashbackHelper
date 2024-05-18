@@ -67,6 +67,28 @@ public class CashbackServiceImpl implements CashbackService {
     }
 
     @Override
+    public void deleteCurrentCashback(String cardName, String category) {
+        deleteCashback(cardName, category, LocalDate.now().withDayOfMonth(1));
+    }
+
+    @Override
+    public void deleteFutureCashback(String cardName, String category) {
+        deleteCashback(cardName, category, LocalDate.now().plusMonths(1).withDayOfMonth(1));
+    }
+
+    @Override
+    public void deleteCashback(String cardName, String category, LocalDate startDate) {
+        Card card = cardsRepository.findByName(cardName);
+
+        if (card == null) {
+            throw new CardNotFoundException(cardName);
+        }
+
+        cashbacksRepository.deleteCashbackByCardIdAndCategoryAndStartDate(card.getId(), category, startDate);
+    }
+
+
+    @Override
     @Transactional
     public void expireCashback() {
         cashbacksRepository.deleteInvalidCashbacks(LocalDate.now());

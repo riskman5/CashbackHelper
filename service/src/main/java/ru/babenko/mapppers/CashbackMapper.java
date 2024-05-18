@@ -9,5 +9,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CashbackMapper {
     FullCashbackDto toFullCashbackDto(Cashback cashback);
+
     List<FullCashbackDto> toFullCashbackDtoList(List<Cashback> cashbacks);
 }

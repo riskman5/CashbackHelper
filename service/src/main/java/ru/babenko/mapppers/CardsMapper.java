@@ -12,8 +12,11 @@ import java.util.List;
 public interface CardsMapper {
     @Mapping(target = "bankName", source = "bank.name")
     FullCardDto toFullCardDto(Card card);
+
     List<FullCardDto> toFullCardDtoList(List<Card> cards);
+
     @Mapping(target = "cardName", source = "name")
     CardCashbackAmountDto toCardCashbackAmountDto(Card card);
+
     List<CardCashbackAmountDto> toCardCashbackAmountDtoList(List<Card> cards);
 }

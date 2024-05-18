@@ -61,6 +61,10 @@ public class CardsServiceImpl implements CardsService {
 
     @Override
     public FullCardDto chooseCard(String category, BigDecimal value) {
+        if (value != null && value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Value must be greater than or equal to 0");
+        }
+
         Long cardId = cashbacksRepository.findCardWithMaxValidCashback(category, value != null ? value : BigDecimal.valueOf(1));
 
         if (cardId == null) {

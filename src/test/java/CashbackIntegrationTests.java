@@ -78,4 +78,17 @@ public class CashbackIntegrationTests {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/cashback/expire"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @Sql(scripts = {"/AddValidSberbank.sql", "/AddValidSberbankCard.sql", "/AddValidSberbankVisaCasback.sql"})
+    public void testDeleteCurrentCashbackAndAddAgain() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/cashback/current")
+                        .param("cardName", "Sberbank Visa")
+                        .param("category", "Развлечения"))
+                .andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/cashback/current")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"cardName\": \"Sberbank Visa\", \"category\": \"Развлечения\", \"cashbackPercentage\": 5 }"))
+                .andExpect(status().isOk());
+    }
 }

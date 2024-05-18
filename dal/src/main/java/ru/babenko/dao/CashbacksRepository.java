@@ -53,4 +53,9 @@ public interface CashbacksRepository extends JpaRepository<Cashback, Long> {
     @Modifying
     @Query("DELETE FROM Cashback c WHERE c.isPermanent = false and c.endDate < :date")
     void deleteInvalidCashbacks(@Param("date") LocalDate date);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Cashback c WHERE c.cardId = :cardId AND c.category = :category AND c.startDate = :date")
+    void deleteCashbackByCardIdAndCategoryAndStartDate(@Param("cardId") Long cardId, @Param("category") String category, @Param("date") LocalDate date);
 }

@@ -8,7 +8,5 @@ import ru.babenko.entities.Card;
 public interface CardsRepository extends JpaRepository<Card, Long> {
     Card findByName(String name);
 
-    Card findTopByOrderById();
-
     boolean existsByName(String name);
 }
