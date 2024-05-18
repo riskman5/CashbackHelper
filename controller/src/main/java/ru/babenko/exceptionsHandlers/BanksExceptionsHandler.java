@@ -16,7 +16,7 @@ public class BanksExceptionsHandler {
         return e.getMessage();
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BankNotFoundException.class)
     public String handleBankNotFound(BankNotFoundException e) {
         return e.getMessage();

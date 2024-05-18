@@ -14,6 +14,7 @@ import ru.babenko.entities.Card;
 import ru.babenko.entities.Cashback;
 import ru.babenko.exceptions.AlreadyUsedCardNameException;
 import ru.babenko.exceptions.BankNotFoundException;
+import ru.babenko.exceptions.CardNotFoundException;
 import ru.babenko.mapppers.CardsMapper;
 
 import java.math.BigDecimal;
@@ -60,9 +61,14 @@ public class CardsServiceImpl implements CardsService {
 
     @Override
     public FullCardDto chooseCard(String category, BigDecimal value) {
-        Long cardId = cashbacksRepository.findCardWithMaxCashback(category, value.longValue());
+        Long cardId = cashbacksRepository.findCardWithMaxValidCashback(category, value != null ? value : BigDecimal.valueOf(1));
 
-        return cardsMapper.toFullCardDto(cardsRepository.findById(cardId).orElse(cardsRepository.findTopByOrderById()));
+        if (cardId == null) {
+            return cardsMapper.toFullCardDto(cardsRepository.findAll().isEmpty()
+                ? null
+                : cardsRepository.findAll().getFirst());
+        }
+        return cardsMapper.toFullCardDto(cardsRepository.findById(cardId).orElse(null));
     }
 
     @Override
@@ -70,11 +76,15 @@ public class CardsServiceImpl implements CardsService {
     public FullCardDto addTransaction(String cardName, String category, BigDecimal transactionAmount) {
         Card card = cardsRepository.findByName(cardName);
 
-        Cashback suitableCashback = cashbacksRepository.findByCardIdAndCategory(card.getId(), category)
-                .stream()
-                .filter(c -> c.getEndDate() == null || c.getEndDate().isAfter(LocalDate.now()))
-                .findFirst()
-                .orElse(null);
+        if (card == null) {
+            throw new CardNotFoundException(cardName);
+        }
+
+        if (card.getRemainingCashbackAmount().compareTo(transactionAmount) < 0) {
+            return cardsMapper.toFullCardDto(card);
+        }
+
+        Cashback suitableCashback = cashbacksRepository.findValidCashbackByCardIdAndCategoryAndDate(card.getId(), category, LocalDate.now());
 
         if (suitableCashback == null) {
             return cardsMapper.toFullCardDto(card);
@@ -89,8 +99,10 @@ public class CardsServiceImpl implements CardsService {
         card.setRemainingCashbackAmount(card.getRemainingCashbackAmount().subtract(transactionAmount));
         cardsRepository.save(card);
 
-        cashbacksRepository.findByCardId(card.getId()).forEach(cashback ->
-            cashback.setRemainingCashbackAmount(card.getRemainingCashbackAmount()));
+        cashbacksRepository.findByCardId(card.getId()).forEach(cashback -> {
+            cashback.setRemainingCashbackAmount(card.getRemainingCashbackAmount());
+            cashbacksRepository.save(cashback);
+        });
 
         return cardsMapper.toFullCardDto(card);
     }

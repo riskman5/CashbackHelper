@@ -10,4 +10,5 @@ public record FullCardDto(
         String name,
         String bankName,
         BigDecimal earnedCashbackAmount,
+        BigDecimal remainingCashbackAmount,
         List<FullCashbackDto> cashbacks) { }

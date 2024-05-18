@@ -47,26 +47,21 @@ public class CashbackServiceImpl implements CashbackService {
             throw new CardNotFoundException(initialCashbackDto.cardName());
         }
 
-        cashbacksRepository.findByCardIdAndCategory(card.getId(), initialCashbackDto.category()).stream()
-                .filter(cashback -> cashback.getStartDate().isBefore(startDate)
-                        && cashback.getEndDate().isAfter(startDate)
-                        || cashback.getIsPermanent())
-                .findFirst()
-                .ifPresent(cashback -> {
-                    throw new AlreadyActiveCashbackCategoryException(initialCashbackDto.category());
-                });
+        if (cashbacksRepository.findValidCashbackByCardIdAndCategoryAndDate(card.getId(),
+                initialCashbackDto.category(),
+                startDate) != null){
+            throw new AlreadyActiveCashbackCategoryException(initialCashbackDto.category());
+        }
 
         var newCashback = Cashback.builder()
                 .cardId(card.getId())
                 .category(initialCashbackDto.category())
-                .startDate(LocalDate.now().withDayOfMonth(1))
+                .startDate(startDate)
+                .endDate(endDate)
                 .cashbackPercentage(initialCashbackDto.cashbackPercentage())
                 .remainingCashbackAmount(card.getRemainingCashbackAmount())
                 .isPermanent(initialCashbackDto.isPermanent());
 
-        if (!initialCashbackDto.isPermanent()) {
-            newCashback.endDate(LocalDate.now().plusMonths(1).withDayOfMonth(1));
-        }
 
         return cashbackMapper.toFullCashbackDto(cashbacksRepository.save(newCashback.build()));
     }
@@ -74,11 +69,6 @@ public class CashbackServiceImpl implements CashbackService {
     @Override
     @Transactional
     public void expireCashback() {
-        cashbacksRepository.findAll().forEach(cashback -> {
-            if (!cashback.getIsPermanent() &&
-                    cashback.getEndDate().isBefore(cashback.getStartDate())) {
-                cashbacksRepository.delete(cashback);
-            }
-        });
+        cashbacksRepository.deleteInvalidCashbacks(LocalDate.now());
     }
 }

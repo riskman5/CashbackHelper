@@ -35,15 +35,15 @@ public class CardsController {
     }
 
     @GetMapping("/choose")
-    public FullCardDto ChooseCard(@RequestParam String category,
-                                  @RequestParam(required = false) BigDecimal value) {
+    public FullCardDto ChooseCard(@RequestParam(name = "category") String category,
+                                  @RequestParam(name = "value", required = false) BigDecimal value) {
         return cardsService.chooseCard(category, value);
     }
 
     @PutMapping("/{cardName}/transactions")
-    public FullCardDto addTransaction(@PathVariable String cardName,
-                                      @RequestParam String category,
-                                      @RequestParam BigDecimal transactionAmount) {
+    public FullCardDto addTransaction(@PathVariable("cardName") String cardName,
+                                      @RequestParam(name = "category") String category,
+                                      @RequestParam(name = "transactionAmount") BigDecimal transactionAmount) {
         return cardsService.addTransaction(cardName, category, transactionAmount);
     }
 
